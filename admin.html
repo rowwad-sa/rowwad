@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة التحكم - رواد العقار للتطوير والاستثمار العقاري</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #1a365d;
+            --secondary-color: #2d5a87;
+            --accent-color: #d4af37;
+            --success-color: #10b981;
+            --danger-color: #ef4444;
+            --warning-color: #f59e0b;
+            --text-dark: #1a202c;
+            --text-light: #718096;
+            --white: #ffffff;
+            --light-bg: #f7fafc;
+            --border-color: #e2e8f0;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: var(--light-bg);
+            color: var(--text-dark);
+            direction: rtl;
+        }
+
+        .login-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+        }
+
+        .login-card {
+            background: white;
+            padding: 3rem;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .login-header h1 {
+            color: var(--primary-color);
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .login-header p {
+            color: var(--text-light);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(26, 54, 93, 0.1);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+
+        .admin-container {
+            display: none;
+            min-height: 100vh;
+        }
+
+        .admin-header {
+            background: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .admin-nav {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-item {
+            padding: 10px 20px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            font-family: 'Cairo', sans-serif;
+            font-weight: 500;
+        }
+
+        .nav-item.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .admin-content {
+            padding: 2rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .content-section {
+            display: none;
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Cairo', sans-serif;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-success {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .btn-danger {
+            background: var(--danger-color);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 12px;
+            text-align: right;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .data-table th {
+            background: var(--light-bg);
+            font-weight: 600;
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .status-available {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status-sold {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .status-new {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .logout-btn {
+            background: var(--danger-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Cairo', sans-serif;
+        }
+
+        .demo-notice {
+            background: linear-gradient(45deg, var(--warning-color), #fbbf24);
+            color: white;
+            padding: 1rem;
+            text-align: center;
+            font-weight: 600;
+            margin-bottom: 2rem;
+            border-radius: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .admin-header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .admin-nav {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- شاشة تسجيل الدخول -->
+    <div id="loginContainer" class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <h1>لوحة التحكم</h1>
+                <p>رواد العقار للتطوير والاستثمار العقاري</p>
+            </div>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="email">البريد الإلكتروني</label>
+                    <input type="email" id="email" value="admin@rawadelaqar.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">كلمة المرور</label>
+                    <input type="password" id="password" value="admin123" required>
+                </div>
+                <button type="submit" class="login-btn">
+                    <i class="fas fa-sign-in-alt"></i>
+                    تسجيل الدخول
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- لوحة التحكم الرئيسية -->
+    <div id="adminContainer" class="admin-container">
+        <div class="demo-notice">
+            <i class="fas fa-info-circle"></i>
+            هذه نسخة تجريبية من لوحة التحكم - البيانات محفوظة محلياً فقط
+        </div>
+        
+        <header class="admin-header">
+            <div class="admin-nav">
+                <button class="nav-item active" onclick="showSection('dashboard')">
+                    <i class="fas fa-tachometer-alt"></i> الرئيسية
+                </button>
+                <button class="nav-item" onclick="showSection('properties')">
+                    <i class="fas fa-home"></i> العقارات
+                </button>
+                <button class="nav-item" onclick="showSection('inquiries')">
+                    <i class="fas fa-envelope"></i> الاستفسارات
+                </button>
+            </div>
+            <div>
+                <span id="adminName">مرحباً، مدير النظام</span>
+                <button class="logout-btn" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i> خروج
+                </button>
+            </div>
+        </header>
+
+        <main class="admin-content">
+            <!-- قسم الإحصائيات -->
+            <section id="dashboard" class="content-section active">
+                <h2>لوحة المعلومات</h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: var(--primary-color);">
+                            <i class="fas fa-home"></i>
+                        </div>
+                        <div>
+                            <h3 id="totalProperties">6</h3>
+                            <p>إجمالي العقارات</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: var(--success-color);">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div>
+                            <h3 id="availableProperties">6</h3>
+                            <p>العقارات المتاحة</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: var(--warning-color);">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div>
+                            <h3 id="totalInquiries">0</h3>
+                            <p>الاستفسارات</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: var(--accent-color);">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <div>
+                            <h3 id="featuredProperties">4</h3>
+                            <p>العقارات المميزة</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- قسم إدارة العقارات -->
+            <section id="properties" class="content-section">
+                <div class="section-header">
+                    <h2>إدارة العقارات</h2>
+                    <button class="btn btn-primary" onclick="alert('ميزة إضافة العقارات ستكون متاحة مع قاعدة البيانات الحقيقية')">
+                        <i class="fas fa-plus"></i> إضافة عقار جديد
+                    </button>
+                </div>
+                <div id="propertiesTable">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>العنوان</th>
+                                <th>النوع</th>
+                                <th>المدينة</th>
+                                <th>السعر</th>
+                                <th>الحالة</th>
+                                <th>مميز</th>
+                                <th>الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>فيلا فاخرة للتمليك</td>
+                                <td>فيلا</td>
+                                <td>المدينة المنورة</td>
+                                <td>2,500,000 ريال</td>
+                                <td><span class="status-badge status-available">متاح</span></td>
+                                <td>⭐</td>
+                                <td>
+                                    <button class="btn btn-primary" style="margin-left: 5px; padding: 5px 10px; font-size: 0.8rem;">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-danger" style="padding: 5px 10px; font-size: 0.8rem;">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>شقة عصرية مفروشة</td>
+                                <td>شقة</td>
+                                <td>الرياض</td>
+                                <td>3,500 ريال/شهرياً</td>
+                                <td><span class="status-badge status-available">متاح</span></td>
+                                <td>-</td>
+                                <td>
+                                    <button class="btn btn-primary" style="margin-left: 5px; padding: 5px 10px; font-size: 0.8rem;">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-danger" style="padding: 5px 10px; font-size: 0.8rem;">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- قسم الاستفسارات -->
+            <section id="inquiries" class="content-section">
+                <div class="section-header">
+                    <h2>الاستفسارات</h2>
+                </div>
+                <div id="inquiriesTable">
+                    <p style="text-align: center; color: var(--text-light); padding: 2rem;">لا توجد استفسارات حالياً</p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        // متغيرات عامة
+        let isLoggedIn = false;
+
+        // تسجيل الدخول
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            // فحص بيانات الدخول (تجريبي)
+            if (email === 'admin@rawadelaqar.com' && password === 'admin123') {
+                isLoggedIn = true;
+                showAdminPanel();
+                showNotification('تم تسجيل الدخول بنجاح', 'success');
+            } else {
+                showNotification('بيانات الدخول غير صحيحة', 'error');
+            }
+        });
+
+        // عرض لوحة التحكم
+        function showAdminPanel() {
+            document.getElementById('loginContainer').style.display = 'none';
+            document.getElementById('adminContainer').style.display = 'block';
+        }
+
+        // تسجيل الخروج
+        function logout() {
+            isLoggedIn = false;
+            document.getElementById('loginContainer').style.display = 'flex';
+            document.getElementById('adminContainer').style.display = 'none';
+            showNotification('تم تسجيل الخروج بنجاح', 'success');
+        }
+
+        // عرض قسم معين
+        function showSection(sectionName) {
+            // إخفاء جميع الأقسام
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // إزالة الفئة النشطة من جميع أزرار التنقل
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // عرض القسم المحدد
+            document.getElementById(sectionName).classList.add('active');
+            
+            // تفعيل زر التنقل المحدد
+            event.target.classList.add('active');
+        }
+
+        // نظام الإشعارات
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 15px 20px;
+                border-radius: 8px;
+                color: white;
+                font-weight: 500;
+                z-index: 10000;
+                animation: slideIn 0.3s ease;
+                background: ${type === 'success' ? 'var(--success-color)' : 
+                            type === 'error' ? 'var(--danger-color)' : 
+                            'var(--primary-color)'};
+            `;
+            
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 3000);
+        }
+
+        // إضافة CSS للحركات
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            
+            @keyframes slideOut {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(100%); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
