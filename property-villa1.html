@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>فيلا فاخرة للتمليك - رواد العقار للتطوير والاستثمار العقاري</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.css">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .property-hero {
+            height: 70vh;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, #1a365d 0%, #2d5a87 100%);
+        }
+        
+        .property-gallery {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .main-property-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+        
+        .property-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.7));
+            display: flex;
+            align-items: end;
+            padding: 3rem;
+        }
+        
+        .property-info {
+            color: white;
+            width: 100%;
+        }
+        
+        .property-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: end;
+            width: 100%;
+        }
+        
+        .property-main-info h1 {
+            font-size: 3.5rem;
+            font-weight: 900;
+            margin-bottom: 1rem;
+            line-height: 1.1;
+        }
+        
+        .property-location {
+            font-size: 1.4rem;
+            margin-bottom: 1.5rem;
+            opacity: 0.9;
+        }
+        
+        .property-price {
+            font-size: 3rem;
+            font-weight: 900;
+            color: #d4af37;
+            margin-bottom: 1rem;
+        }
+        
+        .property-type-badge {
+            background: linear-gradient(45deg, #d4af37, #f59e0b);
+            padding: 10px 25px;
+            border-radius: 30px;
+            font-weight: 600;
+            display: inline-block;
+        }
+        
+        .agent-card {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(15px);
+            padding: 25px;
+            border-radius: 20px;
+            text-align: center;
+            min-width: 200px;
+        }
+        
+        .agent-image {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin-bottom: 15px;
+            border: 4px solid #d4af37;
+        }
+        
+        .gallery-thumbnails {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+            z-index: 10;
+        }
+        
+        .gallery-thumb {
+            width: 80px;
+            height: 60px;
+            border: 3px solid rgba(255,255,255,0.5);
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .gallery-thumb.active {
+            border-color: #d4af37;
+            transform: scale(1.1);
+        }
+        
+        .gallery-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .property-content {
+            padding: 80px 0;
+            background: #f7fafc;
+        }
+        
+        .content-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 4rem;
+            margin-bottom: 4rem;
+        }
+        
+        .property-section {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .section-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1a365d;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .section-title i {
+            color: #d4af37;
+            font-size: 1.5rem;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+        
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 15px;
+            background: #f7fafc;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .feature-item:hover {
+            background: #e2e8f0;
+            transform: translateX(-5px);
+        }
+        
+        .feature-item i {
+            color: #10b981;
+            font-size: 1.2rem;
+        }
+        
+        .details-grid {
+            display: grid;
+            gap: 15px;
+        }
+        
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .detail-label {
+            font-weight: 600;
+            color: #4a5568;
+        }
+        
+        .detail-value {
+            font-weight: 500;
+            color: #1a365d;
+        }
+        
+        .floor-plan-section {
+            text-align: center;
+        }
+        
+        .floor-plan-image {
+            width: 100%;
+            max-width: 500px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            margin: 20px auto;
+            display: block;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 3rem;
+        }
+        
+        .action-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 50px;
+            font-family: 'Cairo', sans-serif;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+            text-decoration: none;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(45deg, #1a365d, #2d5a87);
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(45deg, #d4af37, #f59e0b);
+            color: white;
+        }
+        
+        .btn-success {
+            background: linear-gradient(45deg, #10b981, #34d399);
+            color: white;
+        }
+        
+        .btn-danger {
+            background: linear-gradient(45deg, #ef4444, #f87171);
+            color: white;
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+        
+        .back-btn {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background: rgba(255,255,255,0.9);
+            border: none;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 1000;
+            transition: all 0.3s ease;
+            font-size: 1.5rem;
+            color: #1a365d;
+        }
+        
+        .back-btn:hover {
+            background: #1a365d;
+            color: white;
+            transform: scale(1.1);
+        }
+        
+        @media (max-width: 768px) {
+            .property-hero {
+                height: 50vh;
+            }
+            
+            .property-overlay {
+                padding: 2rem;
+            }
+            
+            .property-main-info h1 {
+                font-size: 2.5rem;
+            }
+            
+            .property-price {
+                font-size: 2rem;
+            }
+            
+            .content-grid {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+            
+            .property-header {
+                flex-direction: column;
+                gap: 2rem;
+                align-items: center;
+                text-align: center;
+            }
+            
+            .gallery-thumbnails {
+                flex-wrap: wrap;
+                max-width: 90%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="back-btn" onclick="window.close()">
+        <i class="fas fa-times"></i>
+    </button>
+
+    <!-- Hero Section -->
+    <section class="property-hero">
+        <div class="property-gallery">
+            <img id="mainPropertyImage" src="https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg?auto=compress&cs=tinysrgb&w=1200" alt="فيلا فاخرة للتمليك" class="main-property-image">
+        </div>
+        
+        <div class="property-overlay">
+            <div class="property-info">
+                <div class="property-header">
+                    <div class="property-main-info">
+                        <h1>فيلا فاخرة للتمليك</h1>
+                        <p class="property-location">
+                            <i class="fas fa-map-marker-alt"></i>
+                            المدينة المنورة - حي الأزهري
+                        </p>
+                        <div class="property-price">2,500,000 ريال</div>
+                        <span class="property-type-badge">للتمليك</span>
+                    </div>
+                    
+                    <div class="agent-card">
+                        <img src="https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=100" alt="أحمد السعيد" class="agent-image">
+                        <h4 style="font-size: 1.2rem; margin-bottom: 8px;">أحمد السعيد</h4>
+                        <p style="font-size: 0.9rem; opacity: 0.8; margin-bottom: 15px;">مستشار عقاري</p>
+                        <button onclick="contactAgent('+966501234567')" style="background: #25d366; color: white; border: none; padding: 10px 20px; border-radius: 25px; font-size: 0.9rem; cursor: pointer; display: flex; align-items: center; gap: 8px; margin: 0 auto; font-family: 'Cairo', sans-serif;">
+                            <i class="fab fa-whatsapp"></i> واتساب
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="gallery-thumbnails">
+            <div class="gallery-thumb active" onclick="changeMainImage('https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg?auto=compress&cs=tinysrgb&w=1200', this)">
+                <img src="https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg?auto=compress&cs=tinysrgb&w=800" alt="صورة 1">
+            </div>
+            <div class="gallery-thumb" onclick="changeMainImage('https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg?auto=compress&cs=tinysrgb&w=1200', this)">
+                <img src="https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg?auto=compress&cs=tinysrgb&w=800" alt="صورة 2">
+            </div>
+            <div class="gallery-thumb" onclick="changeMainImage('https://images.pexels.com/photos/1571453/pexels-photo-1571453.jpeg?auto=compress&cs=tinysrgb&w=1200', this)">
+                <img src="https://images.pexels.com/photos/1571453/pexels-photo-1571453.jpeg?auto=compress&cs=tinysrgb&w=800" alt="صورة 3">
+            </div>
+            <div class="gallery-thumb" onclick="changeMainImage('https://images.pexels.com/photos/1571468/pexels-photo-1571468.jpeg?auto=compress&cs=tinysrgb&w=1200', this)">
+                <img src="https://images.pexels.com/photos/1571468/pexels-photo-1571468.jpeg?auto=compress&cs=tinysrgb&w=800" alt="صورة 4">
+            </div>
+        </div>
+    </section>
+
+    <!-- Property Content -->
+    <section class="property-content">
+        <div class="container">
+            <div class="content-grid">
+                <!-- Main Content -->
+                <div class="main-content">
+                    <!-- Description -->
+                    <div class="property-section">
+                        <h2 class="section-title">
+                            <i class="fas fa-info-circle"></i>
+                            وصف العقار
+                        </h2>
+                        <p style="line-height: 1.8; color: #4a5568; font-size: 1.1rem;">
+                            فيلا فاخرة تتميز بالتصميم العصري والموقع المتميز في حي الأزهري بالمدينة المنورة. تحتوي على جميع وسائل الراحة والرفاهية مع إطلالة رائعة وتشطيبات عالية الجودة. تم تصميم الفيلا بعناية فائقة لتوفر أقصى درجات الراحة والخصوصية للعائلة.
+                        </p>
+                    </div>
+
+                    <!-- Features -->
+                    <div class="property-section">
+                        <h2 class="section-title">
+                            <i class="fas fa-star"></i>
+                            المميزات
+                        </h2>
+                        <div class="features-grid">
+                            <div class="feature-item">
+                                <i class="fas fa-check-circle"></i>
+                                <span>تكييف مركزي</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-check-circle"></i>
+                                <span>نظام أمان متطور</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-check-circle"></i>
+                                <span>مطبخ مجهز بالكامل</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-check-circle"></i>
+                                <span>غرفة خادمة</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-check-circle"></i>
+                                <span>مجلس رجال منفصل</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-check-circle"></i>
+                                <span>صالة استقبال واسعة</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-check-circle"></i>
+                                <span>شبكة إنترنت</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-check-circle"></i>
+                                <span>نظام صوتي</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 360 Virtual Tour -->
+                    <div class="property-section">
+                        <h2 class="section-title">
+                            <i class="fas fa-vr-cardboard"></i>
+                            جولة افتراضية 360°
+                        </h2>
+                        
+                        <div class="viewer-tabs">
+                            <div class="viewer-tab active" onclick="switchViewer('images', this)">
+                                <i class="fas fa-camera"></i> صور 360°
+                            </div>
+                            <div class="viewer-tab" onclick="switchViewer('videos', this)">
+                                <i class="fas fa-video"></i> فيديو 360°
+                            </div>
+                        </div>
+                        
+                        <div class="viewer-content active" id="images-viewer">
+                            <div class="viewer-360-container">
+                                <div id="panorama-villa1" class="viewer-360"></div>
+                                <div class="viewer-controls">
+                                    <button class="viewer-btn" onclick="resetView('villa1')" title="إعادة تعيين العرض">
+                                        <i class="fas fa-home"></i>
+                                    </button>
+                                    <button class="viewer-btn" onclick="toggleAutoRotate('villa1')" title="دوران تلقائي">
+                                        <i class="fas fa-sync-alt"></i>
+                                    </button>
+                                    <button class="viewer-btn" onclick="toggleFullscreen('villa1')" title="ملء الشاشة">
+                                        <i class="fas fa-expand"></i>
+                                    </button>
+                                </div>
+                                <div class="viewer-info">
+                                    <i class="fas fa-mouse"></i> اسحب للنظر حولك
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="viewer-content" id="videos-viewer">
+                            <div class="viewer-360-container">
+                                <video id="video360-villa1" class="viewer-360" controls>
+                                    <source src="https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4" type="video/mp4">
+                                    متصفحك لا يدعم تشغيل الفيديو
+                                </video>
+                                <div class="viewer-info">
+                                    <i class="fas fa-video"></i> فيديو 360 درجة
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sidebar -->
+                <div class="sidebar-content">
+                    <!-- Property Details -->
+                    <div class="property-section">
+                        <h2 class="section-title">
+                            <i class="fas fa-list"></i>
+                            تفاصيل العقار
+                        </h2>
+                        <div class="details-grid">
+                            <div class="detail-item">
+                                <span class="detail-label">غرف النوم</span>
+                                <span class="detail-value">5 غرف</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">الحمامات</span>
+                                <span class="detail-value">4 حمامات</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">المساحة</span>
+                                <span class="detail-value">400 م²</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">المواقف</span>
+                                <span class="detail-value">مواقف سيارات</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">الحديقة</span>
+                                <span class="detail-value">حديقة خاصة</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">المسبح</span>
+                                <span class="detail-value">مسبح</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">الأدوار</span>
+                                <span class="detail-value">دورين</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">عمر العقار</span>
+                                <span class="detail-value">جديدة</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Floor Plan -->
+                    <div class="property-section floor-plan-section">
+                        <h2 class="section-title">
+                            <i class="fas fa-drafting-compass"></i>
+                            مخطط العقار
+                        </h2>
+                        <img src="https://images.pexels.com/photos/8293778/pexels-photo-8293778.jpeg?auto=compress&cs=tinysrgb&w=800" alt="مخطط الفيلا" class="floor-plan-image">
+                        <p style="color: #4a5568; margin-top: 15px;">مخطط تفصيلي يوضح توزيع الغرف والمساحات</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+                <button class="action-btn btn-primary" onclick="contactForProperty('villa1')">
+                    <i class="fas fa-phone"></i>
+                    اتصل بنا
+                </button>
+                <button class="action-btn btn-secondary" onclick="requestVisit('villa1')">
+                    <i class="fas fa-calendar"></i>
+                    طلب زيارة
+                </button>
+                <button class="action-btn btn-success" onclick="shareProperty('villa1')">
+                    <i class="fas fa-share-alt"></i>
+                    مشاركة
+                </button>
+                <button class="action-btn btn-danger" onclick="addToFavorites('villa1')">
+                    <i class="fas fa-heart"></i>
+                    إضافة للمفضلة
+                </button>
+                <a href="index.html" class="action-btn" style="background: linear-gradient(45deg, #8b5cf6, #a78bfa); color: white;">
+                    <i class="fas fa-arrow-right"></i>
+                    العودة للرئيسية
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <script src="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.js"></script>
+    <script>
+        // Gallery functionality
+        function changeMainImage(imageSrc, thumbElement) {
+            const mainImage = document.getElementById('mainPropertyImage');
+            const allThumbs = document.querySelectorAll('.gallery-thumb');
+            
+            mainImage.src = imageSrc;
+            
+            allThumbs.forEach(thumb => thumb.classList.remove('active'));
+            thumbElement.classList.add('active');
+        }
+
+        // 360 Viewer functionality
+        let viewer360;
+
+        function init360Viewer() {
+            if (!window.pannellum) {
+                setTimeout(init360Viewer, 500);
+                return;
+            }
+            
+            viewer360 = pannellum.viewer('panorama-villa1', {
+                type: 'equirectangular',
+                panorama: 'https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg?auto=compress&cs=tinysrgb&w=1200',
+                autoLoad: true,
+                autoRotate: -2,
+                compass: true,
+                showZoomCtrl: false,
+                showFullscreenCtrl: false,
+                showControls: false,
+                mouseZoom: true,
+                doubleClickZoom: true,
+                draggable: true,
+                keyboardZoom: true,
+                hotSpots: [
+                    {
+                        pitch: 10,
+                        yaw: 0,
+                        type: 'info',
+                        text: 'غرفة المعيشة الرئيسية',
+                        cssClass: 'hotspot'
+                    },
+                    {
+                        pitch: -5,
+                        yaw: 90,
+                        type: 'info',
+                        text: 'المطبخ',
+                        cssClass: 'hotspot'
+                    },
+                    {
+                        pitch: 0,
+                        yaw: 180,
+                        type: 'info',
+                        text: 'الشرفة مع الإطلالة',
+                        cssClass: 'hotspot'
+                    }
+                ]
+            });
+        }
+
+        function switchViewer(type, tabElement) {
+            document.querySelectorAll('.viewer-tab').forEach(tab => tab.classList.remove('active'));
+            tabElement.classList.add('active');
+            
+            document.querySelectorAll('.viewer-content').forEach(content => content.classList.remove('active'));
+            document.getElementById(`${type}-viewer`).classList.add('active');
+        }
+
+        function resetView(propertyId) {
+            if (viewer360) {
+                viewer360.setPitch(0);
+                viewer360.setYaw(0);
+                viewer360.setHfov(100);
+            }
+        }
+
+        function toggleAutoRotate(propertyId) {
+            if (viewer360) {
+                const currentSpeed = viewer360.getConfig().autoRotate;
+                if (currentSpeed) {
+                    viewer360.setAutoRotate(0);
+                } else {
+                    viewer360.setAutoRotate(-2);
+                }
+            }
+        }
+
+        function toggleFullscreen(propertyId) {
+            if (viewer360) {
+                viewer360.toggleFullscreen();
+            }
+        }
+
+        // Contact functions
+        function contactAgent(phone) {
+            const message = 'مرحباً، أنا مهتم بالفيلا المعروضة';
+            const whatsappUrl = `https://wa.me/${phone.replace(/\s/g, '')}?text=${encodeURIComponent(message)}`;
+            window.open(whatsappUrl, '_blank');
+        }
+
+        function contactForProperty(propertyId) {
+            const message = 'مرحباً، أنا مهتم بالفيلا الفاخرة للتمليك في المدينة المنورة';
+            const whatsappUrl = `https://wa.me/966501234567?text=${encodeURIComponent(message)}`;
+            window.open(whatsappUrl, '_blank');
+        }
+
+        function requestVisit(propertyId) {
+            alert('تم تسجيل طلب زيارة للعقار. سيتم التواصل معك قريباً.');
+        }
+
+        function shareProperty(propertyId) {
+            if (navigator.share) {
+                navigator.share({
+                    title: 'فيلا فاخرة للتمليك',
+                    text: 'فيلا فاخرة في المدينة المنورة',
+                    url: window.location.href
+                });
+            } else {
+                navigator.clipboard.writeText(window.location.href);
+                alert('تم نسخ رابط العقار');
+            }
+        }
+
+        function addToFavorites(propertyId) {
+            alert('تم إضافة العقار للمفضلة');
+        }
+
+        // Initialize 360 viewer when page loads
+        window.addEventListener('load', () => {
+            setTimeout(init360Viewer, 1000);
+        });
+    </script>
+</body>
+</html>
