@@ -472,24 +472,77 @@
         </main>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
         // متغيرات عامة
         let isLoggedIn = false;
+        let supabaseClient = null;
+
+        // Initialize Supabase
+        function initSupabase() {
+            const SUPABASE_URL = 'https://bboiaqjoqbvxyaqgsduy.supabase.co';
+            const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJib2lhcWpvcWJ2eHlhcWdzZHV5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA0NzAxMDcsImV4cCI6MjA3NjA0NjEwN30.rhvneTPzxkIlmnddglxsE7UGYA4bybLmZcyv4PBfDzg';
+            
+            if (window.supabase) {
+                supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            }
+        }
 
         // تسجيل الدخول
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
-            
-            // فحص بيانات الدخول (تجريبي)
-            if (email === 'admin@rawadelaqar.com' && password === 'admin123') {
-                isLoggedIn = true;
-                showAdminPanel();
-                showNotification('تم تسجيل الدخول بنجاح', 'success');
+            if (supabaseClient) {
+                try {
+                    // Try Supabase authentication
+                    const { data, error } = await supabaseClient.auth.signInWithPassword({
+                        email: email,
+                        password: password
+                    });
+
+                    if (error) {
+                        // Fallback to demo credentials
+                        if (email === 'admin@rawadelaqar.com' && password === 'admin123') {
+                            isLoggedIn = true;
+                            showAdminPanel();
+                            await loadDashboardData();
+                            showNotification('تم تسجيل الدخول بنجاح (وضع تجريبي)', 'success');
+                        } else {
+                            showNotification('بيانات الدخول غير صحيحة', 'error');
+                        }
+                    } else {
+                        // Check if user is admin
+                        const { data: adminData, error: adminError } = await supabaseClient
+                            .from('admin_users')
+                            .select('*')
+                            .eq('email', email)
+                            .single();
+
+                        if (adminData) {
+                            isLoggedIn = true;
+                            showAdminPanel();
+                            await loadDashboardData();
+                            showNotification('تم تسجيل الدخول بنجاح', 'success');
+                        } else {
+                            showNotification('غير مصرح لك بالدخول لهذه الصفحة', 'error');
+                        }
+                    }
+                } catch (error) {
+                    console.error('Login error:', error);
+                    showNotification('حدث خطأ في تسجيل الدخول', 'error');
+                }
             } else {
-                showNotification('بيانات الدخول غير صحيحة', 'error');
+                // Fallback to demo credentials when Supabase is not available
+                if (email === 'admin@rawadelaqar.com' && password === 'admin123') {
+                    isLoggedIn = true;
+                    showAdminPanel();
+                    await loadDashboardData();
+                    showNotification('تم تسجيل الدخول بنجاح (وضع تجريبي)', 'success');
+                } else {
+                    showNotification('بيانات الدخول غير صحيحة', 'error');
+                }
             }
         });
 
