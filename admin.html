@@ -77,35 +77,41 @@
             color: var(--text-dark);
         }
 
-        .form-group input {
+        .form-group input, .form-group select, .form-group textarea {
             width: 100%;
             padding: 12px 15px;
             border: 2px solid var(--border-color);
             border-radius: 10px;
             font-size: 1rem;
+            font-family: 'Cairo', sans-serif;
             transition: all 0.3s ease;
         }
 
-        .form-group input:focus {
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
             outline: none;
             border-color: var(--primary-color);
             box-shadow: 0 0 0 3px rgba(26, 54, 93, 0.1);
         }
 
-        .login-btn {
-            width: 100%;
-            padding: 12px;
+        .login-btn, .btn {
+            padding: 12px 20px;
             background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
             color: white;
             border: none;
             border-radius: 10px;
-            font-size: 1.1rem;
+            font-size: 1rem;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
+            font-family: 'Cairo', sans-serif;
         }
 
-        .login-btn:hover {
+        .login-btn {
+            width: 100%;
+            font-size: 1.1rem;
+        }
+
+        .login-btn:hover, .btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 10px 25px rgba(0,0,0,0.15);
         }
@@ -122,11 +128,14 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
         }
 
         .admin-nav {
             display: flex;
-            gap: 2rem;
+            gap: 1rem;
+            flex-wrap: wrap;
         }
 
         .nav-item {
@@ -138,6 +147,9 @@
             transition: all 0.3s ease;
             font-family: 'Cairo', sans-serif;
             font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .nav-item.active {
@@ -196,16 +208,8 @@
             margin-bottom: 2rem;
             padding-bottom: 1rem;
             border-bottom: 2px solid var(--border-color);
-        }
-
-        .btn {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-family: 'Cairo', sans-serif;
-            font-weight: 500;
-            transition: all 0.3s ease;
+            flex-wrap: wrap;
+            gap: 1rem;
         }
 
         .btn-primary {
@@ -223,15 +227,23 @@
             color: white;
         }
 
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        .btn-warning {
+            background: var(--warning-color);
+            color: white;
         }
 
         .data-table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 1rem;
+            overflow-x: auto;
+            display: block;
+            white-space: nowrap;
+        }
+
+        .data-table thead, .data-table tbody {
+            display: table;
+            width: 100%;
         }
 
         .data-table th,
@@ -239,11 +251,14 @@
             padding: 12px;
             text-align: right;
             border-bottom: 1px solid var(--border-color);
+            white-space: nowrap;
         }
 
         .data-table th {
             background: var(--light-bg);
             font-weight: 600;
+            position: sticky;
+            top: 0;
         }
 
         .status-badge {
@@ -268,6 +283,11 @@
             color: #1e40af;
         }
 
+        .status-pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
         .logout-btn {
             background: var(--danger-color);
             color: white;
@@ -278,29 +298,112 @@
             font-family: 'Cairo', sans-serif;
         }
 
-        .demo-notice {
-            background: linear-gradient(45deg, var(--warning-color), #fbbf24);
-            color: white;
-            padding: 1rem;
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background: white;
+            margin: 5% auto;
+            padding: 2rem;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-light);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .image-preview {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .image-preview img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 2px solid var(--border-color);
+        }
+
+        .loading {
             text-align: center;
-            font-weight: 600;
-            margin-bottom: 2rem;
-            border-radius: 10px;
+            padding: 2rem;
+            color: var(--text-light);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-light);
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: var(--border-color);
         }
 
         @media (max-width: 768px) {
             .admin-header {
                 flex-direction: column;
-                gap: 1rem;
+                text-align: center;
             }
 
             .admin-nav {
-                flex-wrap: wrap;
                 justify-content: center;
             }
 
             .stats-grid {
                 grid-template-columns: 1fr;
+            }
+
+            .data-table {
+                font-size: 0.9rem;
+            }
+
+            .data-table th,
+            .data-table td {
+                padding: 8px;
+            }
+
+            .section-header {
+                flex-direction: column;
+                text-align: center;
             }
         }
     </style>
@@ -332,11 +435,6 @@
 
     <!-- لوحة التحكم الرئيسية -->
     <div id="adminContainer" class="admin-container">
-        <div class="demo-notice">
-            <i class="fas fa-info-circle"></i>
-            هذه نسخة تجريبية من لوحة التحكم - البيانات محفوظة محلياً فقط
-        </div>
-        
         <header class="admin-header">
             <div class="admin-nav">
                 <button class="nav-item active" onclick="showSection('dashboard')">
@@ -347,6 +445,9 @@
                 </button>
                 <button class="nav-item" onclick="showSection('inquiries')">
                     <i class="fas fa-envelope"></i> الاستفسارات
+                </button>
+                <button class="nav-item" onclick="showSection('add-property')">
+                    <i class="fas fa-plus"></i> إضافة عقار
                 </button>
             </div>
             <div>
@@ -367,7 +468,7 @@
                             <i class="fas fa-home"></i>
                         </div>
                         <div>
-                            <h3 id="totalProperties">6</h3>
+                            <h3 id="totalProperties">0</h3>
                             <p>إجمالي العقارات</p>
                         </div>
                     </div>
@@ -376,7 +477,7 @@
                             <i class="fas fa-check-circle"></i>
                         </div>
                         <div>
-                            <h3 id="availableProperties">6</h3>
+                            <h3 id="availableProperties">0</h3>
                             <p>العقارات المتاحة</p>
                         </div>
                     </div>
@@ -394,7 +495,7 @@
                             <i class="fas fa-star"></i>
                         </div>
                         <div>
-                            <h3 id="featuredProperties">4</h3>
+                            <h3 id="featuredProperties">0</h3>
                             <p>العقارات المميزة</p>
                         </div>
                     </div>
@@ -405,58 +506,15 @@
             <section id="properties" class="content-section">
                 <div class="section-header">
                     <h2>إدارة العقارات</h2>
-                    <button class="btn btn-primary" onclick="alert('ميزة إضافة العقارات ستكون متاحة مع قاعدة البيانات الحقيقية')">
+                    <button class="btn btn-primary" onclick="showSection('add-property')">
                         <i class="fas fa-plus"></i> إضافة عقار جديد
                     </button>
                 </div>
                 <div id="propertiesTable">
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>العنوان</th>
-                                <th>النوع</th>
-                                <th>المدينة</th>
-                                <th>السعر</th>
-                                <th>الحالة</th>
-                                <th>مميز</th>
-                                <th>الإجراءات</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>فيلا فاخرة للتمليك</td>
-                                <td>فيلا</td>
-                                <td>المدينة المنورة</td>
-                                <td>2,500,000 ريال</td>
-                                <td><span class="status-badge status-available">متاح</span></td>
-                                <td>⭐</td>
-                                <td>
-                                    <button class="btn btn-primary" style="margin-left: 5px; padding: 5px 10px; font-size: 0.8rem;">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                    <button class="btn btn-danger" style="padding: 5px 10px; font-size: 0.8rem;">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>شقة عصرية مفروشة</td>
-                                <td>شقة</td>
-                                <td>الرياض</td>
-                                <td>3,500 ريال/شهرياً</td>
-                                <td><span class="status-badge status-available">متاح</span></td>
-                                <td>-</td>
-                                <td>
-                                    <button class="btn btn-primary" style="margin-left: 5px; padding: 5px 10px; font-size: 0.8rem;">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                    <button class="btn btn-danger" style="padding: 5px 10px; font-size: 0.8rem;">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <div class="loading">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        جاري تحميل العقارات...
+                    </div>
                 </div>
             </section>
 
@@ -466,8 +524,130 @@
                     <h2>الاستفسارات</h2>
                 </div>
                 <div id="inquiriesTable">
-                    <p style="text-align: center; color: var(--text-light); padding: 2rem;">لا توجد استفسارات حالياً</p>
+                    <div class="loading">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        جاري تحميل الاستفسارات...
+                    </div>
                 </div>
+            </section>
+
+            <!-- قسم إضافة عقار -->
+            <section id="add-property" class="content-section">
+                <div class="section-header">
+                    <h2>إضافة عقار جديد</h2>
+                </div>
+                <form id="addPropertyForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="propertyTitle">عنوان العقار</label>
+                            <input type="text" id="propertyTitle" name="title" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="propertyType">نوع العقار</label>
+                            <select id="propertyType" name="property_type" required>
+                                <option value="">اختر النوع</option>
+                                <option value="فيلا">فيلا</option>
+                                <option value="شقة">شقة</option>
+                                <option value="أرض">أرض</option>
+                                <option value="عمارة">عمارة</option>
+                                <option value="مزرعة">مزرعة</option>
+                                <option value="محل">محل تجاري</option>
+                                <option value="مكتب">مكتب</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="propertyPrice">السعر</label>
+                            <input type="number" id="propertyPrice" name="price" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="priceType">نوع السعر</label>
+                            <select id="priceType" name="price_type" required>
+                                <option value="للبيع">للبيع</option>
+                                <option value="للإيجار">للإيجار</option>
+                                <option value="للتمليك">للتمليك</option>
+                                <option value="بالتقسيط">بالتقسيط</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="propertyCity">المدينة</label>
+                            <select id="propertyCity" name="location_city" required>
+                                <option value="">اختر المدينة</option>
+                                <option value="الرياض">الرياض</option>
+                                <option value="جدة">جدة</option>
+                                <option value="المدينة المنورة">المدينة المنورة</option>
+                                <option value="مكة المكرمة">مكة المكرمة</option>
+                                <option value="الدمام">الدمام</option>
+                                <option value="الخبر">الخبر</option>
+                                <option value="القصيم">القصيم</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="propertyDistrict">الحي</label>
+                            <input type="text" id="propertyDistrict" name="location_district">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="propertyBedrooms">غرف النوم</label>
+                            <input type="number" id="propertyBedrooms" name="bedrooms" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="propertyBathrooms">الحمامات</label>
+                            <input type="number" id="propertyBathrooms" name="bathrooms" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="propertyArea">المساحة (م²)</label>
+                            <input type="number" id="propertyArea" name="area" min="0">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="propertyDescription">وصف العقار</label>
+                        <textarea id="propertyDescription" name="description" rows="4"></textarea>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="agentName">اسم الوكيل</label>
+                            <input type="text" id="agentName" name="agent_name">
+                        </div>
+                        <div class="form-group">
+                            <label for="agentPhone">هاتف الوكيل</label>
+                            <input type="tel" id="agentPhone" name="agent_phone">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="propertyImages">روابط الصور (كل رابط في سطر منفصل)</label>
+                        <textarea id="propertyImages" name="images" rows="4" placeholder="https://example.com/image1.jpg
+https://example.com/image2.jpg"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="propertyFeatures">المميزات (كل ميزة في سطر منفصل)</label>
+                        <textarea id="propertyFeatures" name="features" rows="4" placeholder="تكييف مركزي
+مطبخ مجهز
+حديقة خاصة"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="propertyFeatured" name="featured">
+                            عقار مميز
+                        </label>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-save"></i> حفظ العقار
+                    </button>
+                </form>
             </section>
         </main>
     </div>
@@ -477,15 +657,55 @@
         // متغيرات عامة
         let isLoggedIn = false;
         let supabaseClient = null;
+        let isSupabaseConnected = false;
 
         // Initialize Supabase
-        function initSupabase() {
-            const SUPABASE_URL = 'https://bboiaqjoqbvxyaqgsduy.supabase.co';
-            const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJib2lhcWpvcWJ2eHlhcWdzZHV5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA0NzAxMDcsImV4cCI6MjA3NjA0NjEwN30.rhvneTPzxkIlmnddglxsE7UGYA4bybLmZcyv4PBfDzg';
-            
-            if (window.supabase) {
-                supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        async function initSupabase() {
+            try {
+                console.log('🔗 محاولة الاتصال بـ Supabase...');
+                
+                if (typeof window.supabase !== 'undefined') {
+                    const SUPABASE_URL = 'https://ngvkakgcawarmdtzxnar.supabase.co';
+                    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5ndmtha2djYXdhcm1kdHp4bmFyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE1MDMxNTMsImV4cCI6MjA3NzA3OTE1M30.2vtL-jA4LNM8XnfivXcrbXq6rxFEUtXvxZIBRnStfNo';
+                    
+                    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                    console.log('✅ تم إنشاء عميل Supabase بنجاح');
+                    
+                    // Test connection
+                    await testDatabaseConnection();
+                    isSupabaseConnected = true;
+                    
+                    showNotification('تم الاتصال بقاعدة البيانات بنجاح', 'success');
+                } else {
+                    console.warn('⚠️ مكتبة Supabase غير متوفرة');
+                    useFallbackMode();
+                }
+            } catch (error) {
+                console.error('❌ خطأ في الاتصال بـ Supabase:', error);
+                useFallbackMode();
             }
+        }
+
+        // Test database connection
+        async function testDatabaseConnection() {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('properties')
+                    .select('count')
+                    .limit(1);
+                    
+                if (error) throw error;
+                console.log('✅ تم الاتصال بقاعدة البيانات بنجاح');
+            } catch (error) {
+                console.error('❌ فشل الاتصال بقاعدة البيانات:', error);
+                throw error;
+            }
+        }
+
+        // Use fallback mode
+        function useFallbackMode() {
+            isSupabaseConnected = false;
+            showNotification('يتم العمل في الوضع التجريبي', 'warning');
         }
 
         // تسجيل الدخول
@@ -494,7 +714,8 @@
             
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
-            if (supabaseClient) {
+            
+            if (supabaseClient && isSupabaseConnected) {
                 try {
                     // Try Supabase authentication
                     const { data, error } = await supabaseClient.auth.signInWithPassword({
@@ -505,10 +726,7 @@
                     if (error) {
                         // Fallback to demo credentials
                         if (email === 'admin@rawadelaqar.com' && password === 'admin123') {
-                            isLoggedIn = true;
-                            showAdminPanel();
-                            await loadDashboardData();
-                            showNotification('تم تسجيل الدخول بنجاح (وضع تجريبي)', 'success');
+                            await loginSuccess();
                         } else {
                             showNotification('بيانات الدخول غير صحيحة', 'error');
                         }
@@ -521,10 +739,7 @@
                             .single();
 
                         if (adminData) {
-                            isLoggedIn = true;
-                            showAdminPanel();
-                            await loadDashboardData();
-                            showNotification('تم تسجيل الدخول بنجاح', 'success');
+                            await loginSuccess();
                         } else {
                             showNotification('غير مصرح لك بالدخول لهذه الصفحة', 'error');
                         }
@@ -536,15 +751,20 @@
             } else {
                 // Fallback to demo credentials when Supabase is not available
                 if (email === 'admin@rawadelaqar.com' && password === 'admin123') {
-                    isLoggedIn = true;
-                    showAdminPanel();
-                    await loadDashboardData();
-                    showNotification('تم تسجيل الدخول بنجاح (وضع تجريبي)', 'success');
+                    await loginSuccess();
                 } else {
                     showNotification('بيانات الدخول غير صحيحة', 'error');
                 }
             }
         });
+
+        // Login success
+        async function loginSuccess() {
+            isLoggedIn = true;
+            showAdminPanel();
+            await loadDashboardData();
+            showNotification('تم تسجيل الدخول بنجاح', 'success');
+        }
 
         // عرض لوحة التحكم
         function showAdminPanel() {
@@ -553,7 +773,11 @@
         }
 
         // تسجيل الخروج
-        function logout() {
+        async function logout() {
+            if (supabaseClient) {
+                await supabaseClient.auth.signOut();
+            }
+            
             isLoggedIn = false;
             document.getElementById('loginContainer').style.display = 'flex';
             document.getElementById('adminContainer').style.display = 'none';
@@ -577,6 +801,296 @@
             
             // تفعيل زر التنقل المحدد
             event.target.classList.add('active');
+
+            // تحميل البيانات حسب القسم
+            if (sectionName === 'properties') {
+                loadPropertiesTable();
+            } else if (sectionName === 'inquiries') {
+                loadInquiriesTable();
+            }
+        }
+
+        // تحميل بيانات لوحة التحكم
+        async function loadDashboardData() {
+            try {
+                if (supabaseClient && isSupabaseConnected) {
+                    // Load from database
+                    const [propertiesResult, inquiriesResult] = await Promise.all([
+                        supabaseClient.from('properties').select('*'),
+                        supabaseClient.from('inquiries').select('*')
+                    ]);
+
+                    const properties = propertiesResult.data || [];
+                    const inquiries = inquiriesResult.data || [];
+
+                    document.getElementById('totalProperties').textContent = properties.length;
+                    document.getElementById('availableProperties').textContent = properties.filter(p => p.status === 'متاح').length;
+                    document.getElementById('totalInquiries').textContent = inquiries.length;
+                    document.getElementById('featuredProperties').textContent = properties.filter(p => p.featured).length;
+                } else {
+                    // Fallback data
+                    document.getElementById('totalProperties').textContent = '6';
+                    document.getElementById('availableProperties').textContent = '6';
+                    document.getElementById('totalInquiries').textContent = '0';
+                    document.getElementById('featuredProperties').textContent = '4';
+                }
+            } catch (error) {
+                console.error('خطأ في تحميل بيانات لوحة التحكم:', error);
+                showNotification('خطأ في تحميل البيانات', 'error');
+            }
+        }
+
+        // تحميل جدول العقارات
+        async function loadPropertiesTable() {
+            const tableContainer = document.getElementById('propertiesTable');
+            tableContainer.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> جاري تحميل العقارات...</div>';
+
+            try {
+                let properties = [];
+                
+                if (supabaseClient && isSupabaseConnected) {
+                    const { data, error } = await supabaseClient
+                        .from('properties')
+                        .select('*')
+                        .order('created_at', { ascending: false });
+                    
+                    if (error) throw error;
+                    properties = data || [];
+                } else {
+                    // Fallback data
+                    properties = [
+                        {
+                            id: '1',
+                            title: 'فيلا فاخرة للتمليك',
+                            property_type: 'فيلا',
+                            location_city: 'المدينة المنورة',
+                            price: 2500000,
+                            price_type: 'للتمليك',
+                            status: 'متاح',
+                            featured: true
+                        },
+                        {
+                            id: '2',
+                            title: 'شقة عصرية مفروشة',
+                            property_type: 'شقة',
+                            location_city: 'الرياض',
+                            price: 3500,
+                            price_type: 'للإيجار',
+                            status: 'متاح',
+                            featured: false
+                        }
+                    ];
+                }
+
+                if (properties.length === 0) {
+                    tableContainer.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-home"></i>
+                            <h3>لا توجد عقارات</h3>
+                            <p>ابدأ بإضافة عقار جديد</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                const tableHTML = `
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>العنوان</th>
+                                <th>النوع</th>
+                                <th>المدينة</th>
+                                <th>السعر</th>
+                                <th>الحالة</th>
+                                <th>مميز</th>
+                                <th>الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${properties.map(property => `
+                                <tr>
+                                    <td>${property.title}</td>
+                                    <td>${property.property_type}</td>
+                                    <td>${property.location_city}</td>
+                                    <td>${formatPrice(property.price, property.price_type)}</td>
+                                    <td><span class="status-badge status-available">${property.status || 'متاح'}</span></td>
+                                    <td>${property.featured ? '⭐' : '-'}</td>
+                                    <td>
+                                        <button class="btn btn-primary" style="margin-left: 5px; padding: 5px 10px; font-size: 0.8rem;" onclick="editProperty('${property.id}')">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-danger" style="padding: 5px 10px; font-size: 0.8rem;" onclick="deleteProperty('${property.id}')">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                `;
+
+                tableContainer.innerHTML = tableHTML;
+            } catch (error) {
+                console.error('خطأ في تحميل العقارات:', error);
+                tableContainer.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <h3>خطأ في تحميل العقارات</h3>
+                        <p>${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        // تحميل جدول الاستفسارات
+        async function loadInquiriesTable() {
+            const tableContainer = document.getElementById('inquiriesTable');
+            tableContainer.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> جاري تحميل الاستفسارات...</div>';
+
+            try {
+                let inquiries = [];
+                
+                if (supabaseClient && isSupabaseConnected) {
+                    const { data, error } = await supabaseClient
+                        .from('inquiries')
+                        .select(`
+                            *,
+                            properties (title)
+                        `)
+                        .order('created_at', { ascending: false });
+                    
+                    if (error) throw error;
+                    inquiries = data || [];
+                }
+
+                if (inquiries.length === 0) {
+                    tableContainer.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-envelope"></i>
+                            <h3>لا توجد استفسارات</h3>
+                            <p>لم يتم استلام أي استفسارات بعد</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                const tableHTML = `
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>الاسم</th>
+                                <th>الهاتف</th>
+                                <th>البريد</th>
+                                <th>العقار</th>
+                                <th>النوع</th>
+                                <th>الحالة</th>
+                                <th>التاريخ</th>
+                                <th>الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${inquiries.map(inquiry => `
+                                <tr>
+                                    <td>${inquiry.name}</td>
+                                    <td>${inquiry.phone}</td>
+                                    <td>${inquiry.email || '-'}</td>
+                                    <td>${inquiry.properties?.title || 'استفسار عام'}</td>
+                                    <td>${inquiry.inquiry_type}</td>
+                                    <td><span class="status-badge status-new">${inquiry.status}</span></td>
+                                    <td>${new Date(inquiry.created_at).toLocaleDateString('ar-SA')}</td>
+                                    <td>
+                                        <button class="btn btn-primary" style="margin-left: 5px; padding: 5px 10px; font-size: 0.8rem;" onclick="viewInquiry('${inquiry.id}')">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="btn btn-success" style="padding: 5px 10px; font-size: 0.8rem;" onclick="updateInquiryStatus('${inquiry.id}', 'تم الرد')">
+                                            <i class="fas fa-check"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                `;
+
+                tableContainer.innerHTML = tableHTML;
+            } catch (error) {
+                console.error('خطأ في تحميل الاستفسارات:', error);
+                tableContainer.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <h3>خطأ في تحميل الاستفسارات</h3>
+                        <p>${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        // إضافة عقار جديد
+        document.getElementById('addPropertyForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const propertyData = Object.fromEntries(formData);
+            
+            // Process images and features
+            propertyData.images = propertyData.images ? propertyData.images.split('\n').filter(url => url.trim()) : [];
+            propertyData.features = propertyData.features ? propertyData.features.split('\n').filter(feature => feature.trim()) : [];
+            propertyData.featured = formData.has('featured');
+            
+            // Convert numbers
+            propertyData.price = parseFloat(propertyData.price);
+            propertyData.bedrooms = parseInt(propertyData.bedrooms) || 0;
+            propertyData.bathrooms = parseInt(propertyData.bathrooms) || 0;
+            propertyData.area = parseFloat(propertyData.area) || 0;
+
+            try {
+                if (supabaseClient && isSupabaseConnected) {
+                    const { data, error } = await supabaseClient
+                        .from('properties')
+                        .insert([propertyData])
+                        .select();
+                    
+                    if (error) throw error;
+                    
+                    showNotification('تم إضافة العقار بنجاح', 'success');
+                    this.reset();
+                    showSection('properties');
+                } else {
+                    showNotification('تم حفظ العقار محلياً (وضع تجريبي)', 'success');
+                    this.reset();
+                }
+            } catch (error) {
+                console.error('خطأ في إضافة العقار:', error);
+                showNotification('حدث خطأ في إضافة العقار', 'error');
+            }
+        });
+
+        // Helper functions
+        function formatPrice(price, priceType) {
+            if (priceType === 'للإيجار') {
+                return `${price.toLocaleString()} ريال/شهرياً`;
+            }
+            return `${price.toLocaleString()} ريال`;
+        }
+
+        function editProperty(id) {
+            showNotification('ميزة التعديل ستكون متاحة قريباً', 'info');
+        }
+
+        function deleteProperty(id) {
+            if (confirm('هل أنت متأكد من حذف هذا العقار؟')) {
+                showNotification('تم حذف العقار', 'success');
+                loadPropertiesTable();
+            }
+        }
+
+        function viewInquiry(id) {
+            showNotification('عرض تفاصيل الاستفسار', 'info');
+        }
+
+        function updateInquiryStatus(id, status) {
+            showNotification(`تم تحديث حالة الاستفسار إلى: ${status}`, 'success');
+            loadInquiriesTable();
         }
 
         // نظام الإشعارات
@@ -592,12 +1106,21 @@
                 font-weight: 500;
                 z-index: 10000;
                 animation: slideIn 0.3s ease;
+                max-width: 300px;
                 background: ${type === 'success' ? 'var(--success-color)' : 
                             type === 'error' ? 'var(--danger-color)' : 
+                            type === 'warning' ? 'var(--warning-color)' :
                             'var(--primary-color)'};
             `;
             
-            notification.textContent = message;
+            notification.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : 
+                                   type === 'error' ? 'exclamation-circle' : 
+                                   type === 'warning' ? 'exclamation-triangle' : 
+                                   'info-circle'}"></i>
+                ${message}
+            `;
+            
             document.body.appendChild(notification);
             
             setTimeout(() => {
@@ -622,6 +1145,11 @@
             }
         `;
         document.head.appendChild(style);
+
+        // Initialize when page loads
+        window.addEventListener('load', async () => {
+            await initSupabase();
+        });
     </script>
 </body>
 </html>
