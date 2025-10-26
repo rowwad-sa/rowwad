@@ -5,9 +5,227 @@ window.addEventListener('load', () => {
         loadingScreen.classList.add('hidden');
         document.body.style.overflow = 'auto';
         initializeAnimations();
-        initialize360Viewers();
+        initializeSupabase();
     }, 2000);
 });
+
+// Supabase Configuration
+let supabaseClient = null;
+let isSupabaseConnected = false;
+
+// Initialize Supabase
+async function initializeSupabase() {
+    try {
+        console.log('🔗 محاولة الاتصال بـ Supabase...');
+        
+        // Check if Supabase is available
+        if (typeof window.supabase !== 'undefined') {
+            const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
+            const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
+            
+            if (SUPABASE_URL && SUPABASE_ANON_KEY) {
+                supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                console.log('✅ تم إنشاء عميل Supabase بنجاح');
+                
+                // Test connection
+                await testDatabaseConnection();
+                
+                // Load properties from database
+                await loadPropertiesFromDatabase();
+                
+                showNotification('تم الاتصال بقاعدة البيانات بنجاح', 'success');
+            } else {
+                console.warn('⚠️ متغيرات Supabase غير متوفرة');
+                useFallbackData();
+            }
+        } else {
+            console.warn('⚠️ مكتبة Supabase غير متوفرة');
+            useFallbackData();
+        }
+    } catch (error) {
+        console.error('❌ خطأ في الاتصال بـ Supabase:', error);
+        useFallbackData();
+    }
+    
+    initialize360Viewers();
+}
+
+// Test database connection
+async function testDatabaseConnection() {
+    try {
+        console.log('🧪 اختبار الاتصال بقاعدة البيانات...');
+        const { data, error } = await supabaseClient
+            .from('properties')
+            .select('count')
+            .limit(1);
+            
+        if (error) {
+            throw error;
+        }
+        
+        isSupabaseConnected = true;
+        console.log('✅ تم الاتصال بقاعدة البيانات بنجاح');
+    } catch (error) {
+        console.error('❌ فشل الاتصال بقاعدة البيانات:', error);
+        isSupabaseConnected = false;
+        throw error;
+    }
+}
+
+// Load properties from database
+async function loadPropertiesFromDatabase() {
+    if (!supabaseClient || !isSupabaseConnected) {
+        console.log('📦 استخدام البيانات المحلية');
+        return;
+    }
+    
+    try {
+        console.log('📥 تحميل العقارات من قاعدة البيانات...');
+        const { data: properties, error } = await supabaseClient
+            .from('properties')
+            .select('*')
+            .order('created_at', { ascending: false });
+            
+        if (error) {
+            throw error;
+        }
+        
+        if (properties && properties.length > 0) {
+            console.log(`✅ تم تحميل ${properties.length} عقار من قاعدة البيانات`);
+            updatePropertiesDisplay(properties);
+        } else {
+            console.log('📦 لا توجد عقارات في قاعدة البيانات، استخدام البيانات المحلية');
+        }
+    } catch (error) {
+        console.error('❌ خطأ في تحميل العقارات:', error);
+        showNotification('خطأ في تحميل العقارات من قاعدة البيانات', 'error');
+    }
+}
+
+// Update properties display
+function updatePropertiesDisplay(properties) {
+    const propertiesGrid = document.querySelector('.properties-grid');
+    if (!propertiesGrid) return;
+    
+    propertiesGrid.innerHTML = '';
+    
+    properties.forEach(property => {
+        const propertyCard = createPropertyCard(property);
+        propertiesGrid.appendChild(propertyCard);
+    });
+}
+
+// Create property card from database data
+function createPropertyCard(property) {
+    const card = document.createElement('div');
+    card.className = 'property-card';
+    card.setAttribute('data-category', property.property_type.toLowerCase());
+    
+    const images = Array.isArray(property.images) ? property.images : [];
+    const features = Array.isArray(property.features) ? property.features : [];
+    const mainImage = images[0] || 'https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg?auto=compress&cs=tinysrgb&w=800';
+    
+    // Format price
+    let formattedPrice = '';
+    if (property.price_type === 'للإيجار') {
+        formattedPrice = `${property.price.toLocaleString()} ريال/شهرياً`;
+    } else {
+        formattedPrice = `${property.price.toLocaleString()} ريال`;
+    }
+    
+    card.innerHTML = `
+        <div class="property-image">
+            <img src="${mainImage}" alt="${property.title}">
+            <div class="property-overlay">
+                <div class="property-actions">
+                    <button class="action-btn favorite" title="إضافة للمفضلة">
+                        <i class="far fa-heart"></i>
+                    </button>
+                    <button class="action-btn share" title="مشاركة">
+                        <i class="fas fa-share-alt"></i>
+                    </button>
+                    <button class="action-btn view-360" title="عرض 360" ${property.virtual_360 && Object.keys(property.virtual_360).length > 0 ? '' : 'style="display:none"'}>
+                        <i class="fas fa-vr-cardboard"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="property-badge ${property.price_type === 'للإيجار' ? 'rent' : property.price_type === 'للتمليك' ? 'sale' : 'investment'}">${property.price_type}</div>
+            <div class="property-price">${formattedPrice}</div>
+        </div>
+        <div class="property-content">
+            <div class="property-location">
+                <i class="fas fa-map-marker-alt"></i>
+                <span>${property.location_city}${property.location_district ? ' - ' + property.location_district : ''}</span>
+            </div>
+            <h3 class="property-title">${property.title}</h3>
+            <div class="property-features">
+                <div class="feature">
+                    <i class="fas fa-bed"></i>
+                    <span>${property.bedrooms || 0}</span>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-bath"></i>
+                    <span>${property.bathrooms || 0}</span>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-ruler-combined"></i>
+                    <span>${property.area || 0} م²</span>
+                </div>
+            </div>
+            <div class="property-footer">
+                <div class="agent-info">
+                    <img src="${property.agent_image || 'https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=100'}" alt="${property.agent_name || 'الوكيل'}">
+                    <div class="agent-details">
+                        <span class="agent-name">${property.agent_name || 'الوكيل'}</span>
+                        <span class="agent-title">مستشار عقاري</span>
+                    </div>
+                </div>
+                <button class="view-details-btn" onclick="openPropertyModal('${property.id}')">
+                    <span>التفاصيل</span>
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+            </div>
+        </div>
+    `;
+    
+    return card;
+}
+
+// Use fallback data when database is not available
+function useFallbackData() {
+    console.log('📦 استخدام البيانات المحلية التجريبية');
+    showNotification('يتم استخدام البيانات التجريبية', 'warning');
+    // The existing property cards in HTML will be used
+}
+
+// Submit inquiry to database
+async function submitInquiry(inquiryData) {
+    if (!supabaseClient || !isSupabaseConnected) {
+        console.log('💾 حفظ الاستفسار محلياً');
+        showNotification('تم حفظ استفسارك محلياً', 'success');
+        return;
+    }
+    
+    try {
+        console.log('📤 إرسال الاستفسار إلى قاعدة البيانات...');
+        const { data, error } = await supabaseClient
+            .from('inquiries')
+            .insert([inquiryData])
+            .select();
+            
+        if (error) {
+            throw error;
+        }
+        
+        console.log('✅ تم حفظ الاستفسار في قاعدة البيانات');
+        showNotification('تم إرسال استفسارك بنجاح!', 'success');
+        return data;
+    } catch (error) {
+        console.error('❌ خطأ في حفظ الاستفسار:', error);
+        showNotification('حدث خطأ في إرسال الاستفسار', 'error');
+        throw error;
+    }
+}
 
 // Particles Animation
 function initParticles() {
@@ -708,15 +926,28 @@ window.addEventListener('click', (e) => {
 
 // Contact form submission
 const contactForm = document.getElementById('contactForm');
-contactForm.addEventListener('submit', function(e) {
+contactForm.addEventListener('submit', async function(e) {
     e.preventDefault();
     
     const formData = new FormData(this);
     const data = Object.fromEntries(formData);
     
-    // Simulate form submission
-    showNotification('تم إرسال رسالتك بنجاح! سيتم التواصل معك قريباً.', 'success');
-    this.reset();
+    // Prepare inquiry data
+    const inquiryData = {
+        name: data.name,
+        email: data.email,
+        phone: data.phone,
+        message: data.message,
+        inquiry_type: data.inquiry_type || 'استفسار عام',
+        property_id: data.property_id || null
+    };
+    
+    try {
+        await submitInquiry(inquiryData);
+        this.reset();
+    } catch (error) {
+        console.error('خطأ في إرسال النموذج:', error);
+    }
 });
 
 // Notification system
