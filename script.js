@@ -1,12 +1,18 @@
 // Loading Screen
 window.addEventListener('load', () => {
     const loadingScreen = document.getElementById('loading-screen');
+    
+    // إخفاء شاشة التحميل بسرعة أكبر
     setTimeout(() => {
         loadingScreen.classList.add('hidden');
         document.body.style.overflow = 'auto';
-        initializeAnimations();
-        initializeSupabase();
-    }, 2000);
+        
+        // تهيئة التطبيق
+        setTimeout(() => {
+            initializeAnimations();
+            initializeSupabase();
+        }, 100);
+    }, 800); // تقليل وقت التحميل من 2000 إلى 800
 });
 
 // Supabase Configuration
@@ -20,8 +26,8 @@ async function initializeSupabase() {
         
         // Check if Supabase is available
         if (typeof window.supabase !== 'undefined') {
-            const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
-            const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
+            const SUPABASE_URL = CONFIG.SUPABASE_URL;
+            const SUPABASE_ANON_KEY = CONFIG.SUPABASE_ANON_KEY;
             
             if (SUPABASE_URL && SUPABASE_ANON_KEY) {
                 supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -854,9 +860,9 @@ const propertyData = {
     }
 };
 
-function openPropertyModal(propertyId) {
-    // فتح صفحة جديدة للعقار
-    window.open(`property-${propertyId}.html`, '_blank');
+function openPropertyPage(propertyId) {
+    // فتح صفحة جديدة للعقار مع معرف العقار
+    window.open(`property.html?id=${propertyId}`, '_blank');
 }
 
 function changeMainImage(imageSrc, thumbElement) {
