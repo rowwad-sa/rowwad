@@ -419,11 +419,11 @@
             <form id="loginForm">
                 <div class="form-group">
                     <label for="email">البريد الإلكتروني</label>
-                    <input type="email" id="email" value="admin@rawadelaqar.com" required>
+                    <input type="email" id="email" placeholder="admin@rawadelaqar.com" required>
                 </div>
                 <div class="form-group">
                     <label for="password">كلمة المرور</label>
-                    <input type="password" id="password" value="admin123" required>
+                    <input type="password" id="password" placeholder="كلمة المرور" required>
                 </div>
                 <button type="submit" class="login-btn">
                     <i class="fas fa-sign-in-alt"></i>
@@ -919,6 +919,9 @@ https://example.com/image2.jpg"></textarea>
                                         <button class="btn btn-primary" style="margin-left: 5px; padding: 5px 10px; font-size: 0.8rem;" onclick="editProperty('${property.id}')">
                                             <i class="fas fa-edit"></i>
                                         </button>
+                                        <button class="btn btn-success" style="margin-left: 5px; padding: 5px 10px; font-size: 0.8rem;" onclick="viewProperty('${property.id}')">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
                                         <button class="btn btn-danger" style="padding: 5px 10px; font-size: 0.8rem;" onclick="deleteProperty('${property.id}')">
                                             <i class="fas fa-trash"></i>
                                         </button>
@@ -1054,7 +1057,8 @@ https://example.com/image2.jpg"></textarea>
                     
                     showNotification('تم إضافة العقار بنجاح', 'success');
                     this.reset();
-                    showSection('properties');
+                    // Refresh properties table
+                    loadPropertiesTable();
                 } else {
                     showNotification('تم حفظ العقار محلياً (وضع تجريبي)', 'success');
                     this.reset();
@@ -1077,10 +1081,37 @@ https://example.com/image2.jpg"></textarea>
             showNotification('ميزة التعديل ستكون متاحة قريباً', 'info');
         }
 
+        function viewProperty(id) {
+            window.open(`property.html?id=${id}`, '_blank');
+        }
+
         function deleteProperty(id) {
-            if (confirm('هل أنت متأكد من حذف هذا العقار؟')) {
-                showNotification('تم حذف العقار', 'success');
+            if (!confirm('هل أنت متأكد من حذف هذا العقار؟')) {
+                return;
+            }
+
+            if (supabaseClient && isSupabaseConnected) {
+                deletePropertyFromDatabase(id);
+            } else {
+                showNotification('تم حذف العقار محلياً (وضع تجريبي)', 'success');
                 loadPropertiesTable();
+            }
+        }
+
+        async function deletePropertyFromDatabase(id) {
+            try {
+                const { error } = await supabaseClient
+                    .from('properties')
+                    .delete()
+                    .eq('id', id);
+                
+                if (error) throw error;
+                
+                showNotification('تم حذف العقار بنجاح', 'success');
+                loadPropertiesTable();
+            } catch (error) {
+                console.error('خطأ في حذف العقار:', error);
+                showNotification('حدث خطأ في حذف العقار', 'error');
             }
         }
 
