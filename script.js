@@ -26,8 +26,8 @@ async function initializeSupabase() {
         
         // Check if Supabase is available
         if (typeof window.supabase !== 'undefined') {
-            const SUPABASE_URL = CONFIG.SUPABASE_URL;
-            const SUPABASE_ANON_KEY = CONFIG.SUPABASE_ANON_KEY;
+            const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
+            const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
             
             if (SUPABASE_URL && SUPABASE_ANON_KEY) {
                 supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -110,6 +110,9 @@ async function loadPropertiesFromDatabase() {
 
 // Update properties display
 function updatePropertiesDisplay(properties) {
+    // حفظ العقارات المحملة للاستخدام في صفحات العقارات
+    window.loadedProperties = properties;
+    
     const propertiesGrid = document.querySelector('.properties-grid');
     if (!propertiesGrid) return;
     
@@ -860,9 +863,9 @@ const propertyData = {
     }
 };
 
-function openPropertyPage(propertyId) {
-    // فتح صفحة جديدة للعقار مع معرف العقار
-    window.open(`property.html?id=${propertyId}`, '_blank');
+function openPropertyModal(propertyId) {
+    // فتح صفحة جديدة للعقار
+    window.open(`property-${propertyId}.html`, '_blank');
 }
 
 function changeMainImage(imageSrc, thumbElement) {
