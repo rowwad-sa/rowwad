@@ -652,6 +652,7 @@ https://example.com/image2.jpg"></textarea>
         </main>
     </div>
 
+    <script src="config.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
         // متغيرات عامة
@@ -919,9 +920,6 @@ https://example.com/image2.jpg"></textarea>
                                         <button class="btn btn-primary" style="margin-left: 5px; padding: 5px 10px; font-size: 0.8rem;" onclick="editProperty('${property.id}')">
                                             <i class="fas fa-edit"></i>
                                         </button>
-                                        <button class="btn btn-success" style="margin-left: 5px; padding: 5px 10px; font-size: 0.8rem;" onclick="viewProperty('${property.id}')">
-                                            <i class="fas fa-eye"></i>
-                                        </button>
                                         <button class="btn btn-danger" style="padding: 5px 10px; font-size: 0.8rem;" onclick="deleteProperty('${property.id}')">
                                             <i class="fas fa-trash"></i>
                                         </button>
@@ -1057,8 +1055,7 @@ https://example.com/image2.jpg"></textarea>
                     
                     showNotification('تم إضافة العقار بنجاح', 'success');
                     this.reset();
-                    // Refresh properties table
-                    loadPropertiesTable();
+                    showSection('properties');
                 } else {
                     showNotification('تم حفظ العقار محلياً (وضع تجريبي)', 'success');
                     this.reset();
@@ -1081,37 +1078,10 @@ https://example.com/image2.jpg"></textarea>
             showNotification('ميزة التعديل ستكون متاحة قريباً', 'info');
         }
 
-        function viewProperty(id) {
-            window.open(`property.html?id=${id}`, '_blank');
-        }
-
         function deleteProperty(id) {
-            if (!confirm('هل أنت متأكد من حذف هذا العقار؟')) {
-                return;
-            }
-
-            if (supabaseClient && isSupabaseConnected) {
-                deletePropertyFromDatabase(id);
-            } else {
-                showNotification('تم حذف العقار محلياً (وضع تجريبي)', 'success');
+            if (confirm('هل أنت متأكد من حذف هذا العقار؟')) {
+                showNotification('تم حذف العقار', 'success');
                 loadPropertiesTable();
-            }
-        }
-
-        async function deletePropertyFromDatabase(id) {
-            try {
-                const { error } = await supabaseClient
-                    .from('properties')
-                    .delete()
-                    .eq('id', id);
-                
-                if (error) throw error;
-                
-                showNotification('تم حذف العقار بنجاح', 'success');
-                loadPropertiesTable();
-            } catch (error) {
-                console.error('خطأ في حذف العقار:', error);
-                showNotification('حدث خطأ في حذف العقار', 'error');
             }
         }
 
