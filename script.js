@@ -26,8 +26,8 @@ async function initializeSupabase() {
         
         // Check if Supabase is available
         if (typeof window.supabase !== 'undefined') {
-            const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
-            const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
+            const SUPABASE_URL = CONFIG.SUPABASE_URL;
+            const SUPABASE_ANON_KEY = CONFIG.SUPABASE_ANON_KEY;
             
             if (SUPABASE_URL && SUPABASE_ANON_KEY) {
                 supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -110,9 +110,6 @@ async function loadPropertiesFromDatabase() {
 
 // Update properties display
 function updatePropertiesDisplay(properties) {
-    // حفظ العقارات المحملة للاستخدام في صفحات العقارات
-    window.loadedProperties = properties;
-    
     const propertiesGrid = document.querySelector('.properties-grid');
     if (!propertiesGrid) return;
     
@@ -864,8 +861,474 @@ const propertyData = {
 };
 
 function openPropertyModal(propertyId) {
-    // فتح صفحة جديدة للعقار
-    window.open(`property-${propertyId}.html`, '_blank');
+    // إنشاء صفحة العقار ديناميكياً
+    createPropertyPage(propertyId);
+}
+
+// إنشاء صفحة العقار ديناميكياً
+function createPropertyPage(propertyId) {
+    const property = getPropertyData(propertyId);
+    if (!property) {
+        showNotification('العقار غير موجود', 'error');
+        return;
+    }
+    
+    // فتح نافذة جديدة
+    const newWindow = window.open('', '_blank');
+    
+    // إنشاء محتوى الصفحة
+    const pageContent = generatePropertyPageHTML(property, propertyId);
+    
+    // كتابة المحتوى في النافذة الجديدة
+    newWindow.document.write(pageContent);
+    newWindow.document.close();
+}
+
+// الحصول على بيانات العقار
+function getPropertyData(propertyId) {
+    // البحث في البيانات المحملة من قاعدة البيانات أولاً
+    const loadedProperties = document.querySelectorAll('.property-card');
+    for (let card of loadedProperties) {
+        if (card.querySelector('.view-details-btn')?.onclick?.toString().includes(propertyId)) {
+            return extractPropertyDataFromCard(card, propertyId);
+        }
+    }
+    
+    // إذا لم توجد، استخدم البيانات المحلية
+    return propertyData[propertyId];
+}
+
+// استخراج بيانات العقار من البطاقة
+function extractPropertyDataFromCard(card, propertyId) {
+    const title = card.querySelector('.property-title')?.textContent || '';
+    const location = card.querySelector('.property-location span')?.textContent || '';
+    const price = card.querySelector('.property-price')?.textContent || '';
+    const type = card.querySelector('.property-badge')?.textContent || '';
+    const image = card.querySelector('.property-image img')?.src || '';
+    const bedrooms = card.querySelector('.feature i.fa-bed')?.nextElementSibling?.textContent || '0';
+    const bathrooms = card.querySelector('.feature i.fa-bath')?.nextElementSibling?.textContent || '0';
+    const area = card.querySelector('.feature i.fa-ruler-combined')?.nextElementSibling?.textContent || '0';
+    
+    return {
+        id: propertyId,
+        title,
+        location,
+        price,
+        type,
+        images: [image],
+        bedrooms: parseInt(bedrooms),
+        bathrooms: parseInt(bathrooms),
+        area: parseInt(area),
+        description: `${title} في ${location}`,
+        features: ['تكييف مركزي', 'موقع متميز', 'تشطيبات عالية الجودة'],
+        agent: {
+            name: 'مستشار عقاري',
+            phone: CONFIG.WHATSAPP_NUMBER,
+            image: 'https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=100'
+        }
+    };
+}
+
+// إنشاء HTML لصفحة العقار
+function generatePropertyPageHTML(property, propertyId) {
+    return `
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${property.title} - ${CONFIG.APP_NAME}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Cairo', sans-serif;
+            direction: rtl;
+            background: #f7fafc;
+            color: #1a202c;
+        }
+        
+        .property-hero {
+            height: 70vh;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, #1a365d 0%, #2d5a87 100%);
+        }
+        
+        .property-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .property-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.7));
+            display: flex;
+            align-items: end;
+            padding: 3rem;
+            color: white;
+        }
+        
+        .property-info h1 {
+            font-size: 3rem;
+            font-weight: 900;
+            margin-bottom: 1rem;
+        }
+        
+        .property-location {
+            font-size: 1.4rem;
+            margin-bottom: 1.5rem;
+            opacity: 0.9;
+        }
+        
+        .property-price {
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: #d4af37;
+            margin-bottom: 1rem;
+        }
+        
+        .property-type-badge {
+            background: linear-gradient(45deg, #d4af37, #f59e0b);
+            padding: 10px 25px;
+            border-radius: 30px;
+            font-weight: 600;
+            display: inline-block;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .property-content {
+            padding: 80px 0;
+        }
+        
+        .content-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 4rem;
+            margin-bottom: 4rem;
+        }
+        
+        .property-section {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .section-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1a365d;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .section-title i {
+            color: #d4af37;
+            font-size: 1.5rem;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+        
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 15px;
+            background: #f7fafc;
+            border-radius: 10px;
+        }
+        
+        .feature-item i {
+            color: #10b981;
+            font-size: 1.2rem;
+        }
+        
+        .details-grid {
+            display: grid;
+            gap: 15px;
+        }
+        
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .detail-label {
+            font-weight: 600;
+            color: #4a5568;
+        }
+        
+        .detail-value {
+            font-weight: 500;
+            color: #1a365d;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 3rem;
+        }
+        
+        .action-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 50px;
+            font-family: 'Cairo', sans-serif;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+            text-decoration: none;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(45deg, #1a365d, #2d5a87);
+            color: white;
+        }
+        
+        .btn-success {
+            background: linear-gradient(45deg, #10b981, #34d399);
+            color: white;
+        }
+        
+        .btn-danger {
+            background: linear-gradient(45deg, #ef4444, #f87171);
+            color: white;
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+        
+        .back-btn {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background: rgba(255,255,255,0.9);
+            border: none;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 1000;
+            transition: all 0.3s ease;
+            font-size: 1.5rem;
+            color: #1a365d;
+        }
+        
+        .back-btn:hover {
+            background: #1a365d;
+            color: white;
+            transform: scale(1.1);
+        }
+        
+        @media (max-width: 768px) {
+            .property-hero {
+                height: 50vh;
+            }
+            
+            .property-overlay {
+                padding: 2rem;
+            }
+            
+            .property-info h1 {
+                font-size: 2rem;
+            }
+            
+            .property-price {
+                font-size: 1.8rem;
+            }
+            
+            .content-grid {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="back-btn" onclick="window.close()">
+        <i class="fas fa-times"></i>
+    </button>
+
+    <!-- Hero Section -->
+    <section class="property-hero">
+        <img src="${property.images[0] || 'https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg?auto=compress&cs=tinysrgb&w=1200'}" alt="${property.title}" class="property-image">
+        
+        <div class="property-overlay">
+            <div class="property-info">
+                <h1>${property.title}</h1>
+                <p class="property-location">
+                    <i class="fas fa-map-marker-alt"></i>
+                    ${property.location}
+                </p>
+                <div class="property-price">${property.price}</div>
+                <span class="property-type-badge">${property.type}</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Property Content -->
+    <section class="property-content">
+        <div class="container">
+            <div class="content-grid">
+                <!-- Main Content -->
+                <div class="main-content">
+                    <!-- Description -->
+                    <div class="property-section">
+                        <h2 class="section-title">
+                            <i class="fas fa-info-circle"></i>
+                            وصف العقار
+                        </h2>
+                        <p style="line-height: 1.8; color: #4a5568; font-size: 1.1rem;">
+                            ${property.description}
+                        </p>
+                    </div>
+
+                    <!-- Features -->
+                    <div class="property-section">
+                        <h2 class="section-title">
+                            <i class="fas fa-star"></i>
+                            المميزات
+                        </h2>
+                        <div class="features-grid">
+                            ${property.features.map(feature => `
+                                <div class="feature-item">
+                                    <i class="fas fa-check-circle"></i>
+                                    <span>${feature}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sidebar -->
+                <div class="sidebar-content">
+                    <!-- Property Details -->
+                    <div class="property-section">
+                        <h2 class="section-title">
+                            <i class="fas fa-list"></i>
+                            تفاصيل العقار
+                        </h2>
+                        <div class="details-grid">
+                            <div class="detail-item">
+                                <span class="detail-label">غرف النوم</span>
+                                <span class="detail-value">${property.bedrooms} غرف</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">الحمامات</span>
+                                <span class="detail-value">${property.bathrooms} حمامات</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">المساحة</span>
+                                <span class="detail-value">${property.area} م²</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Agent Info -->
+                    <div class="property-section" style="text-align: center;">
+                        <h2 class="section-title">
+                            <i class="fas fa-user"></i>
+                            الوكيل العقاري
+                        </h2>
+                        <img src="${property.agent.image}" alt="${property.agent.name}" style="width: 80px; height: 80px; border-radius: 50%; margin-bottom: 15px; border: 4px solid #d4af37;">
+                        <h4 style="font-size: 1.2rem; margin-bottom: 8px;">${property.agent.name}</h4>
+                        <p style="font-size: 0.9rem; color: #4a5568; margin-bottom: 15px;">مستشار عقاري</p>
+                        <button onclick="contactAgent('${property.agent.phone}')" style="background: #25d366; color: white; border: none; padding: 10px 20px; border-radius: 25px; font-size: 0.9rem; cursor: pointer; display: flex; align-items: center; gap: 8px; margin: 0 auto; font-family: 'Cairo', sans-serif;">
+                            <i class="fab fa-whatsapp"></i> واتساب
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+                <button class="action-btn btn-primary" onclick="contactForProperty('${propertyId}')">
+                    <i class="fas fa-phone"></i>
+                    اتصل بنا
+                </button>
+                <button class="action-btn btn-success" onclick="shareProperty('${propertyId}')">
+                    <i class="fas fa-share-alt"></i>
+                    مشاركة
+                </button>
+                <button class="action-btn btn-danger" onclick="addToFavorites('${propertyId}')">
+                    <i class="fas fa-heart"></i>
+                    إضافة للمفضلة
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        function contactAgent(phone) {
+            const message = 'مرحباً، أنا مهتم بالعقار المعروض';
+            const whatsappUrl = \`https://wa.me/\${phone.replace(/\\s/g, '')}?text=\${encodeURIComponent(message)}\`;
+            window.open(whatsappUrl, '_blank');
+        }
+
+        function contactForProperty(propertyId) {
+            const message = 'مرحباً، أنا مهتم بالعقار: ${property.title}';
+            const whatsappUrl = \`https://wa.me/${CONFIG.WHATSAPP_NUMBER.replace(/\s/g, '')}?text=\${encodeURIComponent(message)}\`;
+            window.open(whatsappUrl, '_blank');
+        }
+
+        function shareProperty(propertyId) {
+            if (navigator.share) {
+                navigator.share({
+                    title: '${property.title}',
+                    text: '${property.description}',
+                    url: window.location.href
+                });
+            } else {
+                navigator.clipboard.writeText(window.location.href);
+                alert('تم نسخ رابط العقار');
+            }
+        }
+
+        function addToFavorites(propertyId) {
+            alert('تم إضافة العقار للمفضلة');
+        }
+    </script>
+</body>
+</html>
+    `;
 }
 
 function changeMainImage(imageSrc, thumbElement) {
